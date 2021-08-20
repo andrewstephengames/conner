@@ -526,6 +526,10 @@ int main ()
                 mvprintw(0, maxX-13, "Mode: DESTROY");
                 attroff(COLOR_PAIR(STONE_COLOR));
                 scoreMath(25, 'v');
+                mvprintw (0, 0, "           ");
+                attron (COLOR_PAIR(HEALTH_COLOR));
+                healthDisplay(diff);
+                attroff (COLOR_PAIR(HEALTH_COLOR));
                 refresh();
                 break; 
         }
