@@ -5,7 +5,7 @@ Currently the game is only available for Desktop Linux platforms, however I will
 
 Packages required for compilation:
 * `git`
-* `ncurses`
+* `ncurses` or `libncurses-dev`
 * `gcc` or `libllvm`
 * any terminal emulator
 
