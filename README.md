@@ -12,7 +12,7 @@ Packages required for compilation:
 Installation instructions:
 * `git clone https://github.com/andrewstephengames/conner.git`
 * `cd conner/`
-* `cat game.sh` (in case you wanna know whether the script is malicious or not, spoiler alert: *it isn't*)
+* `cat game.sh` (in case you wanna know whether the script is malicious or not, spoiler alert: **it isn't**)
 * `./game.sh`
 
 Congratulations! You now have a binary of Conner!
