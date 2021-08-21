@@ -23,7 +23,7 @@ int MAX_HEALTH = 10;
 int maxY, maxX, mvY, mvX, grassY, grassX;
 int score, stoneY[1025], stoneX[1025], listGrassY[1025], listGrassX[1025];
 int playerY, playerX, enemyY = 3, enemyX = 3, oldY = -1, oldX = -1;
-int diff, diffRand[3], dropVar;
+int diff, diffRand[3], dropVar, blockY, blockX, houseTrigger;
 char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********";
 char block = '#';
 
@@ -76,12 +76,17 @@ void healthDisplay (int diff)
 
 }
 
-/*
+void blockRecord()
+{
+    blockY = mvY, blockX = mvX;
+}
+
 void blockSearch ()
 {
-    for (int d = 10; d > 0; d--);
+    if (abs(mvY-blockY) <= blockY && abs(mvX-blockX) <= blockX)
+        houseTrigger++;
 }
-*/
+
 
 void enemyMaker (int range)
 {
@@ -133,6 +138,24 @@ void enemyMaker (int range)
             enemyX++;
         }
     }
+    if (houseTrigger > 0)
+        if (rand()%diffRand[2] > diffRand[3] && enemyX > 1
+            && enemyY > 1 && enemyX < maxX-1 &&
+            enemyY < maxY-1)
+        {
+            if (enemyX < maxX-1) enemyX += rand()%2;
+            enemyY += rand()%2;
+            if (enemyY < maxY-1) enemyY += rand()%2;
+//            enemyX -= rand()%2;
+        }
+        else if (enemyX > 1 && enemyY > 1 && enemyX < maxX-1
+                 && enemyY < maxY-1)
+        {
+//            enemyX += rand()%2;
+            if (enemyX > 1) enemyX -= rand()%2;
+            enemyY -= rand()%2;
+            if (enemyY > 1) enemyY -= rand()%2;
+        }
     else
     {
         if (rand()%diffRand[2] > diffRand[3] && enemyX > 1
@@ -396,6 +419,7 @@ int main ()
     mvY = maxY/2, mvX = maxX/2;
     while (1)
     {
+        blockSearch(); 
         //difficulty handler, printfs are for debugging
         switch (diff)
         {
@@ -509,6 +533,7 @@ int main ()
                 mvprintw(0, maxX-20, "                    ");
                 attron(COLOR_PAIR(BUILD_COLOR));
                 mvprintw(0, maxX-13, "Mode: Build");
+                blockRecord();
                 attroff(COLOR_PAIR(BUILD_COLOR));
                 break;
             case 120: mvwaddch(win, mvY, mvX, ' '); //'x'
