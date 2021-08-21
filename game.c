@@ -138,7 +138,14 @@ void enemyMaker (int range)
             enemyX++;
         }
     }
+    /*
+     *difficulty decrease to make enemy pursue less when
+     *building 
+     *for some reason, on easy it pursues more and
+     *on medi it pursues less (TODO)
+    */
     if (houseTrigger > 0)
+        diff = 1;
         if (rand()%diffRand[2] > diffRand[3] && enemyX > 1
             && enemyY > 1 && enemyX < maxX-1 &&
             enemyY < maxY-1)
@@ -343,9 +350,9 @@ void diffSelect ()
     scanf ("%s", difficulty);
 //    customUpper(difficulty);
 
-    if (strcasecmp(difficulty, "EASY") == 0) diff = 0; MAX_SCORE = 256; healthDisplay(0);
-    if (strcasecmp(difficulty, "MEDI") == 0) diff = 1; MAX_SCORE = 512; healthDisplay(1);
-    if (strcasecmp(difficulty, "HARD") == 0) diff = 2; MAX_SCORE = 1024; healthDisplay(2);
+    if (strcasecmp(difficulty, "EASY") == 0) diff = 0; healthDisplay(0);
+    if (strcasecmp(difficulty, "MEDI") == 0) diff = 1; healthDisplay(1);
+    if (strcasecmp(difficulty, "HARD") == 0) diff = 2; healthDisplay(2);
 
 /* TODO: find a better way of doing this
     while (1)
@@ -424,14 +431,17 @@ int main ()
         switch (diff)
         {
             case 0: 
+                MAX_SCORE = 256;
                 enemyMaker(10); 
 //                printf("%d", diff);
                 break;
             case 1: 
-                enemyMaker(15); 
+                MAX_SCORE = 512;
+                enemyMaker(15);
 //                printf("%d", diff);
                 break;
             case 2: 
+                MAX_SCORE = 512;
                 enemyMaker(25); 
 //                printf("%d", diff);
                 break;
