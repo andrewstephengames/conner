@@ -193,7 +193,6 @@ void enemyMaker (int range)
     {
         endwin();
         printf("Enemy killed you and you lost! \nScore: %d\n", score);
-        system("pkill mpv");
         exit(0);
     }
     oldY = enemyY, oldX = enemyX;
@@ -288,14 +287,12 @@ void scoreMath (int modifier, char key)
     {
         endwin();
         printf("You won with the overflow score of %d points! Congrats and thanks for playing!\n", score);
-        system("pkill mpv");
         exit(0);
     }
     if (score >= MAX_SCORE-1)
     {
         endwin();
         printf("You won with a score of %d points! Thanks for playing!\n", score);
-        system("pkill mpv");
         exit(0);
     }
 }
@@ -468,7 +465,6 @@ int main ()
             case 113: //'q'
                 endwin();
                 printf("Hope you enjoyed playing. See you next time! \nScore: %d\n", score);
-                system("pkill mpv");
                 exit(0);
             //block selection keys
             case 49: //'1'
@@ -573,6 +569,5 @@ int main ()
     refresh();    
     printf("Hope you enjoyed playing. See you next time!\n");
     endwin();
-    system("pkill mpv");
     exit(0);
 }
