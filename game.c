@@ -83,10 +83,9 @@ void blockRecord()
 
 void blockSearch ()
 {
-    if (abs(mvY-blockY) <= blockY && abs(mvX-blockX) <= blockX)
+    if (abs(mvY-blockY) < blockY && abs(mvX-blockX) < blockX)
         houseTrigger++;
 }
-
 
 void enemyMaker (int range)
 {
