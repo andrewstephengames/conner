@@ -89,6 +89,7 @@ void blockSearch ()
 
 void enemyMaker (int range)
 {
+    int olddiff = diff;
     //prevent enemy trail
     mvaddch(oldY, oldX, ' ');
     playerY = mvY, playerX = mvX;
@@ -120,6 +121,7 @@ void enemyMaker (int range)
     //chance to determine if enemy wants to follow you
     //is based on difficulty
     //this is to make it less impossible to escape from enemy
+        diff = olddiff;
         if (playerY < enemyY && rand()%diffRand[0] > diffRand[1]) 
         {
             enemyY--;
@@ -164,6 +166,7 @@ void enemyMaker (int range)
         }
     else
     {
+        diff = olddiff;
         if (rand()%diffRand[2] > diffRand[3] && enemyX > 1
             && enemyY > 1 && enemyX < maxX-1 &&
             enemyY < maxY-1)
@@ -346,9 +349,21 @@ void diffSelect ()
     scanf ("%s", difficulty);
 //    customUpper(difficulty);
 
-    if (strcasecmp(difficulty, "EASY") == 0) diff = 0; healthDisplay(0);
-    if (strcasecmp(difficulty, "MEDI") == 0) diff = 1; healthDisplay(1);
-    if (strcasecmp(difficulty, "HARD") == 0) diff = 2; healthDisplay(2);
+    if (strcasecmp(difficulty, "EASY") == 0) 
+    {
+        diff = 0; 
+        healthDisplay(0);
+    }
+    if (strcasecmp(difficulty, "MEDI") == 0) 
+    {
+        diff = 1; 
+        healthDisplay(1);
+    }
+    if (strcasecmp(difficulty, "HARD") == 0) 
+    {
+        diff = 2; 
+        healthDisplay(2);
+    }
 
 /* TODO: find a better way of doing this
     while (1)
@@ -437,7 +452,7 @@ int main ()
 //                printf("%d", diff);
                 break;
             case 2: 
-                MAX_SCORE = 512;
+                MAX_SCORE = 1024;
                 enemyMaker(25); 
 //                printf("%d", diff);
                 break;
