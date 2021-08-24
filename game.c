@@ -8,6 +8,8 @@
 
 int MAX_SCORE;
 int MAX_HEALTH = 10;
+int GRASSY_MAX, GRASSX_MAX;
+//TODO: prevent grass from generating on the border
 
 //color codes
 #define TITLE_COLOR 1
@@ -185,6 +187,7 @@ void enemyMaker (int range)
             if (enemyY > 1) enemyY -= rand()%2;
         }
     }
+    diff = olddiff;
     attron (COLOR_PAIR(ENEMY_COLOR));
     mvaddch(enemyY, enemyX, '&');
     attroff (COLOR_PAIR(ENEMY_COLOR));
@@ -562,6 +565,10 @@ int main ()
                 mvprintw(0, maxX-13, "Mode: Destroy");
                 attroff(COLOR_PAIR(DESTROY_COLOR));
                 scoreMath(5, 'x'); 
+                mvprintw (0, 0, "           ");
+                attron (COLOR_PAIR(HEALTH_COLOR));
+                healthDisplay(diff);
+                attroff (COLOR_PAIR(HEALTH_COLOR));
                 refresh();
 //              scoreMath(1, 'g');                
                 break;
