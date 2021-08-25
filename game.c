@@ -1,4 +1,5 @@
 //TODO: add useless mechanic that spawns something
+//TODO: fix enemy AI for buildings
 //on a per chance per event basis
 #include <ncurses.h>
 #include <stdlib.h>
@@ -8,7 +9,7 @@
 
 int MAX_SCORE;
 int MAX_HEALTH = 10;
-int GRASSY_MAX, GRASSX_MAX;
+int GRASSY_MAX, GRASSX_MAX, GRASSY_MIN = 3, GRASSX_MIN = 3;
 //TODO: prevent grass from generating on the border
 
 //color codes
@@ -424,15 +425,36 @@ int main ()
     attron (COLOR_PAIR(TITLE_COLOR));
     mvprintw (0, maxX/2-5, "Conner Indev");
     attroff (COLOR_PAIR(TITLE_COLOR));
+    GRASSY_MAX = maxY-3, GRASSX_MAX = maxX-3;
     for (int i = 0; i < 1024; i++)
     {
         grassY = rand()%150, grassX = rand()%150; 
-        mvY = rand()%300, mvX = rand()%300;
+        mvY = rand()%500, mvX = rand()%500;
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
-        mvwaddch(win, grassY, grassX, rand()%127
+        if ((listGrassY[i] <= maxY+3 && listGrassX[i] <= maxX+3) &&(listGrassY[i] >= GRASSY_MAX || listGrassX[i] >= GRASSX_MAX))
+        {
+            listGrassY[i] -= abs(listGrassY[i]-GRASSY_MAX);
+            listGrassX[i] -= abs(listGrassX[i]-GRASSX_MAX);
+        }
+        if ((listGrassY[i] >= -3 && listGrassX[i] >= -3) && (listGrassY[i] <= GRASSY_MIN || listGrassX[i] <= GRASSX_MIN))
+        {
+            listGrassY[i] += abs(listGrassY[i]-GRASSY_MIN);
+            listGrassX[i] += abs(listGrassX[i]-GRASSX_MIN);
+        }
+        if ((stoneY[i] >= maxY+3 && stoneX[i] >= maxX+3) &&(stoneY[i] >= GRASSY_MAX || stoneX[i] >= GRASSX_MAX))
+        {
+            stoneY[i] -= abs(stoneY[i]-GRASSY_MAX);
+            stoneX[i] -= abs(stoneX[i]-GRASSX_MAX);
+        }
+        if ((stoneY[i] >= -3 && stoneX[i] >= -3) && (stoneY[i] <= GRASSY_MIN || stoneX[i] <= GRASSX_MIN))
+        {
+            stoneY[i] += abs(stoneY[i]-GRASSY_MIN);
+            stoneX[i] += abs(stoneX[i]-GRASSX_MIN);
+        }
+        mvwaddch(win, listGrassY[i], listGrassX[i], rand()%127
             | COLOR_PAIR(GRASS_COLOR));
-        mvwaddch(win, mvY, mvX, rand()%127
+        mvwaddch(win, stoneY[i], stoneX[i], rand()%127
                 | COLOR_PAIR(STONE_COLOR));
     }
     wrefresh(win);
@@ -577,7 +599,8 @@ int main ()
                 attron(COLOR_PAIR(STONE_COLOR));
                 mvprintw(0, maxX-13, "Mode: DESTROY");
                 attroff(COLOR_PAIR(STONE_COLOR));
-                scoreMath(25, 'v');
+//                scoreMath(25, 'v');                 
+                scoreMath(100, 'v');//for debugging
                 mvprintw (0, 0, "           ");
                 attron (COLOR_PAIR(HEALTH_COLOR));
                 healthDisplay(diff);
