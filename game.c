@@ -10,7 +10,6 @@
 int MAX_SCORE;
 int MAX_HEALTH = 10;
 int GRASSY_MAX, GRASSX_MAX, GRASSY_MIN = 3, GRASSX_MIN = 3;
-//TODO: prevent grass from generating on the border
 
 //color codes
 #define TITLE_COLOR 1
@@ -27,6 +26,7 @@ int maxY, maxX, mvY, mvX, grassY, grassX;
 int score, stoneY[1025], stoneX[1025], listGrassY[1025], listGrassX[1025];
 int playerY, playerX, enemyY = 3, enemyX = 3, oldY = -1, oldX = -1;
 int diff, diffRand[3], dropVar, blockY, blockX, houseTrigger;
+int randGrassMod = 100, randStoneMod = 175;
 char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********";
 char block = '#';
 
@@ -155,7 +155,7 @@ void enemyMaker (int range)
             enemyY < maxY-1)
         {
             if (enemyX < maxX-1) enemyX += rand()%2;
-            enemyY += rand()%2;
+//            enemyY += rand()%2;
             if (enemyY < maxY-1) enemyY += rand()%2;
 //            enemyX -= rand()%2;
         }
@@ -164,7 +164,7 @@ void enemyMaker (int range)
         {
 //            enemyX += rand()%2;
             if (enemyX > 1) enemyX -= rand()%2;
-            enemyY -= rand()%2;
+//            enemyY -= rand()%2;
             if (enemyY > 1) enemyY -= rand()%2;
         }
     else
@@ -175,7 +175,7 @@ void enemyMaker (int range)
             enemyY < maxY-1)
         {
             if (enemyX < maxX-1) enemyX += rand()%2;
-            enemyY += rand()%2;
+ //           enemyY += rand()%2;
             if (enemyY < maxY-1) enemyY += rand()%2;
 //            enemyX -= rand()%2;
         }
@@ -184,7 +184,7 @@ void enemyMaker (int range)
         {
 //            enemyX += rand()%2;
             if (enemyX > 1) enemyX -= rand()%2;
-            enemyY -= rand()%2;
+//            enemyY -= rand()%2;
             if (enemyY > 1) enemyY -= rand()%2;
         }
     }
@@ -425,29 +425,30 @@ int main ()
     attron (COLOR_PAIR(TITLE_COLOR));
     mvprintw (0, maxX/2-5, "Conner Indev");
     attroff (COLOR_PAIR(TITLE_COLOR));
-    GRASSY_MAX = maxY-3, GRASSX_MAX = maxX-3;
+    GRASSY_MAX = maxY, GRASSX_MAX = maxX;
     for (int i = 0; i < 1024; i++)
     {
-        grassY = rand()%150, grassX = rand()%150; 
-        mvY = rand()%500, mvX = rand()%500;
+        grassY = rand()%randGrassMod, grassX = rand()%randGrassMod; 
+        mvY = rand()%randStoneMod, mvX = rand()%randStoneMod;
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
-        if ((listGrassY[i] <= maxY+3 && listGrassX[i] <= maxX+3) &&(listGrassY[i] >= GRASSY_MAX || listGrassX[i] >= GRASSX_MAX))
+        //grasslimiter
+        if ((listGrassY[i] < maxY && listGrassX[i] < maxX) &&(listGrassY[i] < GRASSY_MAX && listGrassX[i] < GRASSX_MAX))
         {
             listGrassY[i] -= abs(listGrassY[i]-GRASSY_MAX);
             listGrassX[i] -= abs(listGrassX[i]-GRASSX_MAX);
         }
-        if ((listGrassY[i] >= -3 && listGrassX[i] >= -3) && (listGrassY[i] <= GRASSY_MIN || listGrassX[i] <= GRASSX_MIN))
+        if ((listGrassY[i] > 0 && listGrassX[i] > 0) && (listGrassY[i] > GRASSY_MIN && listGrassX[i] > GRASSX_MIN))
         {
             listGrassY[i] += abs(listGrassY[i]-GRASSY_MIN);
             listGrassX[i] += abs(listGrassX[i]-GRASSX_MIN);
         }
-        if ((stoneY[i] >= maxY+3 && stoneX[i] >= maxX+3) &&(stoneY[i] >= GRASSY_MAX || stoneX[i] >= GRASSX_MAX))
+        if ((stoneY[i] < maxY && stoneX[i] < maxX) && (stoneY[i] < GRASSY_MAX && stoneX[i] < GRASSX_MAX))
         {
             stoneY[i] -= abs(stoneY[i]-GRASSY_MAX);
             stoneX[i] -= abs(stoneX[i]-GRASSX_MAX);
         }
-        if ((stoneY[i] >= -3 && stoneX[i] >= -3) && (stoneY[i] <= GRASSY_MIN || stoneX[i] <= GRASSX_MIN))
+        if ((stoneY[i] > 0 && stoneX[i] > 0) && (stoneY[i] > GRASSY_MIN && stoneX[i] > GRASSX_MIN))
         {
             stoneY[i] += abs(stoneY[i]-GRASSY_MIN);
             stoneX[i] += abs(stoneX[i]-GRASSX_MIN);
