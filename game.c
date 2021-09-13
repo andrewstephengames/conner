@@ -10,6 +10,7 @@
 int MAX_SCORE;
 int MAX_HEALTH = 10;
 int GRASSY_MAX, GRASSX_MAX, GRASSY_MIN = 3, GRASSX_MIN = 3;
+FILE *restrict seedFile;
 
 //color codes
 #define TITLE_COLOR 1
@@ -26,7 +27,7 @@ int maxY, maxX, mvY, mvX, grassY, grassX;
 int score, stoneY[1025], stoneX[1025], listGrassY[1025], listGrassX[1025];
 int playerY, playerX, enemyY = 3, enemyX = 3, oldY = -1, oldX = -1;
 int diff, diffRand[3], dropVar, blockY, blockX, houseTrigger;
-int randGrassMod = 100, randStoneMod = 175;
+int randGrassMod = 200, randStoneMod = 300, seed;
 char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********";
 char block = '#';
 
@@ -53,7 +54,9 @@ void healthDisplay (int diff)
         if (diff == 0 && i == strlen(health)-1)
         {
             MAX_HEALTH = 10;
-            lastI = 9;
+//            lastI = 9;
+            lastI = i;
+            printf ("%d\n", i);
             break;
         }
         if (diff == 1 && i == 7) 
@@ -430,9 +433,11 @@ int main ()
     {
         grassY = rand()%randGrassMod, grassX = rand()%randGrassMod; 
         mvY = rand()%randStoneMod, mvX = rand()%randStoneMod;
+        seed = grassY+grassX+mvY+mvX;
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
-        //grasslimiter
+        //grasslimiter, turned off for now due to bugginess
+        /*
         if ((listGrassY[i] < maxY && listGrassX[i] < maxX) &&(listGrassY[i] < GRASSY_MAX && listGrassX[i] < GRASSX_MAX))
         {
             listGrassY[i] -= abs(listGrassY[i]-GRASSY_MAX);
@@ -453,6 +458,7 @@ int main ()
             stoneY[i] += abs(stoneY[i]-GRASSY_MIN);
             stoneX[i] += abs(stoneX[i]-GRASSX_MIN);
         }
+        */
         mvwaddch(win, listGrassY[i], listGrassX[i], rand()%127
             | COLOR_PAIR(GRASS_COLOR));
         mvwaddch(win, stoneY[i], stoneX[i], rand()%127
@@ -505,6 +511,7 @@ int main ()
             case 113: //'q'
                 endwin();
                 printf("Hope you enjoyed playing. See you next time! \nScore: %d\n", score);
+                fprintf(seedFile, "Seed was: %d\n", seed);
                 exit(0);
             //block selection keys
             case 49: //'1'
@@ -600,8 +607,8 @@ int main ()
                 attron(COLOR_PAIR(STONE_COLOR));
                 mvprintw(0, maxX-13, "Mode: DESTROY");
                 attroff(COLOR_PAIR(STONE_COLOR));
-//                scoreMath(25, 'v');                 
-                scoreMath(100, 'v');//for debugging
+                scoreMath(25, 'v');                 
+//                scoreMath(100, 'v');//for debugging
                 mvprintw (0, 0, "           ");
                 attron (COLOR_PAIR(HEALTH_COLOR));
                 healthDisplay(diff);
