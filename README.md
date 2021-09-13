@@ -14,5 +14,6 @@ Installation instructions:
 * `cd conner/`
 * `cat game.sh` (in case you wanna know whether the script is malicious or not, spoiler alert: **it isn't**)
 * `./game.sh`
+* `./game`
 
 Congratulations! You now have a binary of Conner!

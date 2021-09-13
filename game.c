@@ -10,7 +10,6 @@
 int MAX_SCORE;
 int MAX_HEALTH = 10;
 int GRASSY_MAX, GRASSX_MAX, GRASSY_MIN = 3, GRASSX_MIN = 3;
-FILE *restrict seedFile;
 
 //color codes
 #define TITLE_COLOR 1
@@ -27,9 +26,11 @@ int maxY, maxX, mvY, mvX, grassY, grassX;
 int score, stoneY[1025], stoneX[1025], listGrassY[1025], listGrassX[1025];
 int playerY, playerX, enemyY = 3, enemyX = 3, oldY = -1, oldX = -1;
 int diff, diffRand[3], dropVar, blockY, blockX, houseTrigger;
-int randGrassMod = 200, randStoneMod = 300, seed;
+int randGrassMod = 200, randStoneMod = 300, seed[5][1024];
 char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********";
+FILE * seedFile;
 char block = '#';
+char * seedFileName = "seed";
 
 int indexX;
 void healthBar(int trigger)
@@ -43,6 +44,14 @@ void healthBar(int trigger)
     }
     indexX++;
     refresh ();
+}
+
+void endHook (int exitCode)
+{
+    endwin();
+    fprintf(seedFile, "%d\n", seed[0][0]);
+    fclose(seedFile);
+    exit (exitCode);
 }
 
 void healthDisplay (int diff)
@@ -200,9 +209,8 @@ void enemyMaker (int range)
     if (playerX == enemyX && playerY == enemyY
         && MAX_HEALTH == 0)
     {
-        endwin();
+        endHook (0);
         printf("Enemy killed you and you lost! \nScore: %d\n", score);
-        exit(0);
     }
     oldY = enemyY, oldX = enemyX;
 }
@@ -294,15 +302,13 @@ void scoreMath (int modifier, char key)
     attroff(COLOR_PAIR(SCORE_COLOR));
     if (score > MAX_SCORE)
     {
-        endwin();
         printf("You won with the overflow score of %d points! Congrats and thanks for playing!\n", score);
-        exit(0);
+        endHook (0);
     }
     if (score >= MAX_SCORE-1)
     {
-        endwin();
         printf("You won with a score of %d points! Thanks for playing!\n", score);
-        exit(0);
+        endHook (0);
     }
 }
 
@@ -386,9 +392,60 @@ void diffSelect ()
     }
 */
 }
-
-int main ()
+//TODO: complete seed functionality
+void seedAssign (int seed[][1024])
 {
+    for (int i = 0; i < 1024; i++)
+    {
+        grassY = seed[1][i];
+        grassX = seed[2][i];
+        mvY = seed[3][i];
+        mvX = seed[4][i];
+    }
+}
+
+void printUsage ()
+{
+    printf ("Defaults: -c\n");
+    printf ("Usage: \n");
+    printf ("-s: input custom seed\n");
+    printf ("-v: verbose\n");
+    printf ("-x: survival mode\n");
+    printf ("-c: creative mode\n");
+    printf ("-h: print usage\n");
+}
+
+
+int main (int argc, char **argv)
+{
+    while ((argc > 1) && (argv[1][0] == '-'))
+    {
+        switch (argv[1][1])
+        {
+            case 'c':
+                printf("Creative Mode: Infinite blocks, infinite lives, enemy inactive\n");
+                break;
+
+            case 's':
+                printf("Input custom seed:\n");
+                break;
+            case 'v':
+                printf("Verbose mode: extra command-line output\n\n");
+                break;
+            case 'x':
+                printf("Survival Mode: gather blocks, build, and survive\n\n");
+                break;
+            case 'h':
+                printUsage();
+                break;
+            default:
+                printf("Invalid \"%s\" Argument\n\n", argv[1]);
+                printUsage();
+                endHook (0);
+        }
+        ++argv;
+        --argc;
+    }
     diffSelect();
     //system("mpv --no-terminal --no-audio-display ~/code/minecraft-cli/Haggstrom.mp3 &");
     initscr();
@@ -397,6 +454,7 @@ int main ()
     if (!has_colors())
         printf ("Your terminal does not support colors!\n");
     start_color();
+    seedFile = fopen (seedFileName, "r+");
     srand(time(0));
 
     //color codes' code
@@ -433,7 +491,11 @@ int main ()
     {
         grassY = rand()%randGrassMod, grassX = rand()%randGrassMod; 
         mvY = rand()%randStoneMod, mvX = rand()%randStoneMod;
-        seed = grassY+grassX+mvY+mvX;
+        seed[0][0] += grassY+grassX+mvY+mvX;
+        seed[1][i] = grassY;
+        seed[2][i] = grassX;
+        seed[3][i] = mvY;
+        seed[4][i] = mvX;
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
         //grasslimiter, turned off for now due to bugginess
@@ -509,10 +571,8 @@ int main ()
             case 0x43: wmove (win, mvY, mvX++); refresh(); break; //'right'
             //quit key
             case 113: //'q'
-                endwin();
+                endHook (0);
                 printf("Hope you enjoyed playing. See you next time! \nScore: %d\n", score);
-                fprintf(seedFile, "Seed was: %d\n", seed);
-                exit(0);
             //block selection keys
             case 49: //'1'
                 block = '|';
@@ -620,6 +680,6 @@ int main ()
     getch();
     refresh();    
     printf("Hope you enjoyed playing. See you next time!\n");
-    endwin();
-    exit(0);
+    endHook(0);
+    return 0;
 }
