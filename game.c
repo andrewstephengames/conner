@@ -454,7 +454,7 @@ int main (int argc, char **argv)
     if (!has_colors())
         printf ("Your terminal does not support colors!\n");
     start_color();
-    seedFile = fopen (seedFileName, "r+");
+    seedFile = fopen (seedFileName, "w");
     srand(time(0));
 
     //color codes' code
