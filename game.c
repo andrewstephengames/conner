@@ -314,6 +314,7 @@ void scoreMath (int modifier, char key)
     attron(COLOR_PAIR(SCORE_COLOR));
     mvprintw(0, 18, "Score:  %d  ", score);
     attroff(COLOR_PAIR(SCORE_COLOR));
+    //FIXME: win message doesnt print
     if (score > MAX_SCORE)
     {
         printf("You won with the overflow score of %d points! Congrats and thanks for playing!\n", score);
