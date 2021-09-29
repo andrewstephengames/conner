@@ -6,6 +6,7 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+#include <stdbool.h>
 
 int MAX_SCORE;
 int MAX_HEALTH = 10;
@@ -27,10 +28,11 @@ int score, stoneY[1025], stoneX[1025], listGrassY[1025], listGrassX[1025];
 int playerY, playerX, enemyY = 3, enemyX = 3, oldY = -1, oldX = -1;
 int diff, diffRand[3], dropVar, blockY, blockX, houseTrigger;
 int randGrassMod = 200, randStoneMod = 300, seed[5][1024];
-char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********";
+char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********", seedString[1048];
 FILE * seedFile;
 char block = '#';
 char * seedFileName = "seed";
+bool seedInput;
 
 int indexX;
 void healthBar(int trigger)
@@ -49,7 +51,14 @@ void healthBar(int trigger)
 void endHook (int exitCode)
 {
     endwin();
-    fprintf(seedFile, "%d\n", seed[0][0]);
+
+    fprintf(seedFile, "Seed: %s\nSum of all seed components: %d", 
+            seedString, seed[0][0]);
+/*
+    //debug
+    printf ("Seed: %s\nSum of all seed components: %d", 
+            seed[0][0], seedString);
+*/
     fclose(seedFile);
     exit (exitCode);
 }
@@ -65,7 +74,7 @@ void healthDisplay (int diff)
             MAX_HEALTH = 10;
 //            lastI = 9;
             lastI = i;
-            printf ("%d\n", i);
+//            printf ("%d\n", i);
             break;
         }
         if (diff == 1 && i == 7) 
@@ -358,7 +367,7 @@ int diffcmp ()
 
 void diffSelect ()
 {
-    printf ("Pick difficulty from the following list:\n*EASY\n*MEDI\n*HARD\n\n>");
+    printf ("\nPick difficulty from the following list:\n*EASY\n*MEDI\n*HARD\n\n>");
     scanf ("%s", difficulty);
 //    customUpper(difficulty);
 
@@ -392,7 +401,6 @@ void diffSelect ()
     }
 */
 }
-//TODO: complete seed functionality
 void seedAssign (int seed[][1024])
 {
     for (int i = 0; i < 1024; i++)
@@ -401,6 +409,11 @@ void seedAssign (int seed[][1024])
         grassX = seed[2][i];
         mvY = seed[3][i];
         mvX = seed[4][i];
+        seed[0][i] = grassY+grassX+mvY+mvX;
+        seedString[i] = grassY;
+        seedString[i+1] = grassX;
+        seedString[i+2] = mvY;
+        seedString[i+3] = mvX;
     }
 }
 
@@ -413,6 +426,30 @@ void printUsage ()
     printf ("-x: survival mode\n");
     printf ("-c: creative mode\n");
     printf ("-h: print usage\n");
+}
+
+void seedPrompt ()
+{
+    char prompt;
+    printf ("\nDo you want to input a seed? (Y/n)\n>");
+    scanf ("%c", &prompt);
+    switch (prompt)
+    {
+        case 'Y': seedInput = true;
+        case 'y': seedInput = true;
+        case 'n': seedInput = false;
+        case 'N': seedInput = false;
+    }
+    //TODO: seedInput doesnt become true for some reason
+    if (seedInput == true)
+    {
+        printf ("\nInput desired seed: ");
+        for (int i = 0; i < 1024; i++)
+        {
+            scanf ("%d%d%d%d", &seed[1][i], &seed[2][i],
+                    &seed[3][i], &seed[4][i]);
+        }
+    }
 }
 
 
@@ -446,6 +483,7 @@ int main (int argc, char **argv)
         ++argv;
         --argc;
     }
+    seedPrompt();
     diffSelect();
     //system("mpv --no-terminal --no-audio-display ~/code/minecraft-cli/Haggstrom.mp3 &");
     initscr();
@@ -489,13 +527,22 @@ int main (int argc, char **argv)
     GRASSY_MAX = maxY, GRASSX_MAX = maxX;
     for (int i = 0; i < 1024; i++)
     {
-        grassY = rand()%randGrassMod, grassX = rand()%randGrassMod; 
-        mvY = rand()%randStoneMod, mvX = rand()%randStoneMod;
-        seed[0][0] += grassY+grassX+mvY+mvX;
-        seed[1][i] = grassY;
-        seed[2][i] = grassX;
-        seed[3][i] = mvY;
-        seed[4][i] = mvX;
+        if (seedInput == false)
+        {
+            grassY = rand()%randGrassMod, grassX = rand()%randGrassMod; 
+            mvY = rand()%randStoneMod, mvX = rand()%randStoneMod;
+            seed[0][0] += grassY+grassX+mvY+mvX;
+            seed[1][i] = grassY;
+            seed[2][i] = grassX;
+            seed[3][i] = mvY;
+            seed[4][i] = mvX;
+        }
+        else
+        //TODO
+        {
+            seedAssign (seed);
+            printf ("\nSeed input success.\n");
+        }
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
         //grasslimiter, turned off for now due to bugginess
