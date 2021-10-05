@@ -1,6 +1,7 @@
 //TODO: add useless mechanic that spawns something
-//TODO: fix enemy AI for buildings
 //on a per chance per event basis
+//TODO: survival mode
+//FIXME: fix segfault when printing usage
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
@@ -8,6 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+//constants
 int MAX_SCORE;
 int MAX_HEALTH = 10;
 int GRASSY_MAX, GRASSX_MAX, GRASSY_MIN = 3, GRASSX_MIN = 3;
@@ -34,6 +36,9 @@ char block = '#';
 char * seedFileName = "seed";
 bool seedInput;
 
+//gamemode vars
+int blockLimit, destroyLimit, gameMode;
+
 int indexX;
 void healthBar(int trigger)
 {
@@ -52,7 +57,7 @@ void endHook (int exitCode)
 {
     endwin();
 
-    fprintf(seedFile, "Seed: %s\nSum of all seed components: %d", 
+    fprintf(seedFile, "Seed: %s\nSum of all seed components: %d\n", 
             seedString, seed[0][0]);
 /*
     //debug
@@ -309,6 +314,7 @@ void scoreMath (int modifier, char key)
     attron(COLOR_PAIR(SCORE_COLOR));
     mvprintw(0, 18, "Score:  %d  ", score);
     attroff(COLOR_PAIR(SCORE_COLOR));
+    //FIXME: win message doesnt print
     if (score > MAX_SCORE)
     {
         printf("You won with the overflow score of %d points! Congrats and thanks for playing!\n", score);
@@ -426,6 +432,7 @@ void printUsage ()
     printf ("-x: survival mode\n");
     printf ("-c: creative mode\n");
     printf ("-h: print usage\n");
+    endHook (0);
 }
 
 void seedPrompt ()
@@ -440,7 +447,7 @@ void seedPrompt ()
         case 'n': seedInput = false;
         case 'N': seedInput = false;
     }
-    //TODO: seedInput doesnt become true for some reason
+    //TODO: seedInput doesnt become true for some reason, also find a better implementation
     if (seedInput == true)
     {
         printf ("\nInput desired seed: ");
@@ -471,6 +478,7 @@ int main (int argc, char **argv)
                 break;
             case 'x':
                 printf("Survival Mode: gather blocks, build, and survive\n\n");
+                gameMode = 1;
                 break;
             case 'h':
                 printUsage();
@@ -695,6 +703,7 @@ int main (int argc, char **argv)
                 mvprintw(0, maxX-13, "Mode: Build");
                 blockRecord();
                 attroff(COLOR_PAIR(BUILD_COLOR));
+                blockLimit++;
                 break;
             case 120: mvwaddch(win, mvY, mvX, ' '); //'x'
                 mvprintw(0, maxX-20, "                    ");
@@ -706,6 +715,7 @@ int main (int argc, char **argv)
                 attron (COLOR_PAIR(HEALTH_COLOR));
                 healthDisplay(diff);
                 attroff (COLOR_PAIR(HEALTH_COLOR));
+                destroyLimit++;
                 refresh();
 //              scoreMath(1, 'g');                
                 break;
@@ -720,6 +730,7 @@ int main (int argc, char **argv)
                 attron (COLOR_PAIR(HEALTH_COLOR));
                 healthDisplay(diff);
                 attroff (COLOR_PAIR(HEALTH_COLOR));
+                destroyLimit += 2;
                 refresh();
                 break; 
         }
