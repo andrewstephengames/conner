@@ -33,7 +33,7 @@ int randGrassMod = 200, randStoneMod = 300, seed[5][1024];
 char difficulty[3], EASY[3], MEDI[3], HARD[3], health[10] = "**********", seedString[1048];
 FILE * seedFile;
 char block = '#';
-char * seedFileName = "seed";
+char * seedFileName = "/home/andrew/conner/seed";
 bool seedInput;
 
 //gamemode vars
