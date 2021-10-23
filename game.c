@@ -1,7 +1,8 @@
 //TODO: add useless mechanic that spawns something
 //on a per chance per event basis
 //TODO: survival mode
-//TODO: seed mode
+//TODO: implement build and rm limit mechanics
+//TODO: improve seed mode
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
@@ -558,10 +559,10 @@ int main (int argc, char **argv)
             seed[4][i] = mvX;
         }
         else
-        //TODO
         {
             seedAssign (seed);
-            printf ("\nSeed input success.\n");
+//            printf ("\nSeed input success.\n");
+//TODO: fix printf printing to ncurses instead of stdout
             wrefresh (win);
             refresh();
         }
