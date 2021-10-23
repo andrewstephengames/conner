@@ -1,13 +1,14 @@
 //TODO: add useless mechanic that spawns something
 //on a per chance per event basis
 //TODO: survival mode
-//FIXME: fix segfault when printing usage
+//TODO: seed mode
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
 #include <string.h>
 #include <stdbool.h>
+#include <assert.h>
 
 //constants
 int MAX_SCORE;
@@ -56,15 +57,18 @@ void healthBar(int trigger)
 void endHook (int exitCode)
 {
     endwin();
-
+/*
     fprintf(seedFile, "Seed: %s\nSum of all seed components: %d\n", 
             seedString, seed[0][0]);
-/*
+    //printing in endHook causes segfault
+*/
     //debug
+/*
     printf ("Seed: %s\nSum of all seed components: %d", 
             seed[0][0], seedString);
 */
-    fclose(seedFile);
+//    fclose(seedFile);
+//    closing seedFile in endHook causes segfault
     exit (exitCode);
 }
 
@@ -442,19 +446,28 @@ void seedPrompt ()
     scanf ("%c", &prompt);
     switch (prompt)
     {
-        case 'Y': seedInput = true;
-        case 'y': seedInput = true;
-        case 'n': seedInput = false;
-        case 'N': seedInput = false;
+        case 'Y': 
+            seedInput = true;
+            break;
+        case 'y': 
+            seedInput = true;
+            break;
+        case 'n': 
+            seedInput = false;
+            break;
+        case 'N': 
+            seedInput = false;
+            break;
+        default:
+            seedInput = true;
+            break;
     }
-    //TODO: seedInput doesnt become true for some reason, also find a better implementation
     if (seedInput == true)
     {
         printf ("\nInput desired seed: ");
-        for (int i = 0; i < 1024; i++)
         {
-            scanf ("%d%d%d%d", &seed[1][i], &seed[2][i],
-                    &seed[3][i], &seed[4][i]);
+            scanf ("%d%d%d%d", &seed[1][1023], &seed[2][1023],
+                    &seed[3][1023], &seed[4][1023]);
         }
     }
 }
@@ -469,7 +482,6 @@ int main (int argc, char **argv)
             case 'c':
                 printf("Creative Mode: Infinite blocks, infinite lives, enemy inactive\n");
                 break;
-
             case 's':
                 printf("Input custom seed:\n");
                 break;
@@ -550,6 +562,8 @@ int main (int argc, char **argv)
         {
             seedAssign (seed);
             printf ("\nSeed input success.\n");
+            wrefresh (win);
+            refresh();
         }
         stoneY[i]=mvY, stoneX[i]=mvX;
         listGrassY[i]=grassY, listGrassX[i]=grassX;
