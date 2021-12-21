@@ -3,6 +3,7 @@
 //TODO: survival mode
 //TODO: implement build and rm limit mechanics
 //TODO: improve seed mode
+//TODO: key to go back to center of screen
 #include <ncurses.h>
 #include <stdlib.h>
 #include <time.h>
@@ -748,6 +749,9 @@ int main (int argc, char **argv)
                 destroyLimit += 2;
                 refresh();
                 break; 
+	   case 'p':
+		printf ("tp to x/2 y/2 not implemented.\n");
+		break;
         }
     }
     getch();
