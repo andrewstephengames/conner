@@ -76,7 +76,7 @@ void endHook (int exitCode)
 
 void healthDisplay (int diff)
 {
-    int lastI;
+//    int lastI;
     for (unsigned int i = 0; i < strlen(health); i++)
     {
         mvaddch(0, i, health[i]);
@@ -84,20 +84,20 @@ void healthDisplay (int diff)
         {
             MAX_HEALTH = 10;
 //            lastI = 9;
-            lastI = i;
+//*            lastI = i;
 //            printf ("%d\n", i);
             break;
         }
         if (diff == 1 && i == 7) 
         {
             MAX_HEALTH = 8;
-            lastI = i;
+//            lastI = i;
             break; 
         }
         if (diff == 2 && i == 4) 
         {
             MAX_HEALTH = 5;
-            lastI = i;
+//            lastI = i;
             break; 
         }
     }
@@ -181,6 +181,7 @@ void enemyMaker (int range)
      *on medi it pursues less (TODO)
     */
     if (houseTrigger > 0)
+    {
         diff = 1;
         if (rand()%diffRand[2] > diffRand[3] && enemyX > 1
             && enemyY > 1 && enemyX < maxX-1 &&
@@ -199,6 +200,7 @@ void enemyMaker (int range)
 //            enemyY -= rand()%2;
             if (enemyY > 1) enemyY -= rand()%2;
         }
+    }
     else
     {
         diff = olddiff;
@@ -642,8 +644,9 @@ int main (int argc, char **argv)
             case 0x43: wmove (win, mvY, mvX++); refresh(); break; //'right'
             //quit key
             case 113: //'q'
-                endHook (0);
                 printf("Hope you enjoyed playing. See you next time! \nScore: %d\n", score);
+                endHook (0);
+                break;
             //block selection keys
             case 49: //'1'
                 block = '|';
